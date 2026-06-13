@@ -1,0 +1,78 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: ["v*"]
+  workflow_dispatch:
+
+env:
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6.8
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.0'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          cache: true
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/vcpkg-cache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+
+      - name: Configure CMake
+        run: |
+          cmake -B build `
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} `
+          -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake `
+          -DVCPKG_TARGET_TRIPLET=x64-windows-static-md `
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\install
+
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_CONFIGURATION }} --parallel
+
+      - name: Install
+        run: cmake --install build --config ${{ env.BUILD_CONFIGURATION }}
+
+      - name: Copy ScanModel
+        run: Copy-Item -Recurse -Force ScanModel install\QRHunter_1.0.0\ScanModel
+
+      - name: Create ZIP
+        run: |
+          Compress-Archive -Path "install\QRHunter_1.0.0\*" -DestinationPath "QRHunter_${{ github.ref_name }}.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QRHunter_${{ github.ref_name }}
+          path: QRHunter_${{ github.ref_name }}.zip
+          retention-days: 5
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          files: QRHunter_${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
