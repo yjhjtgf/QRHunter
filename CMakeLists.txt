@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
-project(QRHunter
-    VERSION 1.0.0
+project(LiveQRHunter
+    VERSION 1.0.1
     LANGUAGES CXX
 )
 

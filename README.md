@@ -1,4 +1,4 @@
-# QRHunter
+# LiveQRHunter
 
 直播二维码实时监控工具。从抖音/B站直播间实时捕获二维码，重新生成干净的二维码图像并显示，方便手机扫码。
 
@@ -15,11 +15,11 @@
 
 ## 下载
 
-从 [Releases](../../releases) 页面下载最新版本的 ZIP 文件，解压后运行 `QRHunter.exe`。
+从 [Releases](../../releases) 页面下载最新版本的 ZIP 文件，解压后运行 `LiveQRHunter.exe`。
 
 ## 使用方法
 
-1. 运行 `QRHunter.exe`
+1. 运行 `LiveQRHunter.exe`
 2. 选择平台（抖音/B站）
 3. 输入直播间房间号
 4. 点击 ▶ 开始监控

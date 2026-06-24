@@ -110,10 +110,10 @@ static nlohmann::json loadConfigFile()
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
-    a.setApplicationName("QRHunter");
+    a.setApplicationName("LiveQRHunter");
 
     QWidget w;
-    w.setWindowTitle("QRHunter");
+    w.setWindowTitle("LiveQRHunter");
     w.setMinimumSize(380, 500);
 
     QVBoxLayout* root = new QVBoxLayout(&w);
